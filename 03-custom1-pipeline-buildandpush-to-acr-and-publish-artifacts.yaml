@@ -56,4 +56,5 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'kube-manifests'
         publishLocation: 'Container'
+    - bash: echo After copying contents into the Build Artifact Directory; ls -R $(Build.ArtifactStagingDIrectory)
 
