@@ -11,7 +11,7 @@ resources:
 variables:
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: '036a203e-66e9-4949-bb55-a43fe3468fbb'
-  imageRepository: 'blueazuredevopsgithubacraksapp'
+  imageRepository: 'stihl7'
   containerRegistry: 'stihlcontainerregistry.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
