@@ -1,0 +1,59 @@
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- master
+
+resources:
+- repo: self
+
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: '036a203e-66e9-4949-bb55-a43fe3468fbb'
+  imageRepository: 'blueazuredevopsgithubacraksapp'
+  containerRegistry: 'stihlcontainerregistry.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  tag: '$(Build.BuildId)'
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  displayName: Build and push stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+
+## Publish Artifacts Pipeline Code in addition to Build and Push to ACR
+    - bash: echo Contents in the SystemDefaultWorking Directory; ls -R $(System.DefaultWorkingDirectory)
+    - bash: echo Before copying contents into the Build Artifact Directory; ls -R $(Build.ArtifactStagingDIrectory)
+    ## Copy the files from the Source Folder to the Target folder. The Source folder is the root folder of a project's
+    ## assets. In this case (in most cases, in fact) this is the root of the git repo. But it could be a local folder,
+    ## for example, in the case of usig a self-hosted agent.
+    ## Source Directory: $(System.DefaultWorkingDirectory)/kube-manifests
+    ## Target Directory: 
+    - task: CopyFiles@2 
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)/kube-manifests'
+        Contents: '**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'kube-manifests'
+        publishLocation: 'Container'
+
