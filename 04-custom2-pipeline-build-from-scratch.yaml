@@ -15,7 +15,7 @@ stages:
       - job: Build
         displayName: Build Job
         pool:
-          name: 'azure-pipelines'
+          name: 'azure pipelines'
         steps:
         # Task-1: Build Docker Image and push to Azure Container Registry ACR
         - task: Docker@2
